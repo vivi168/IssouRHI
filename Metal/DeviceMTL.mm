@@ -75,7 +75,6 @@ std::shared_ptr<AccelerationStructure> DeviceImpl::CreateAccelerationStructure(c
   return nullptr;
 }
 
-
 std::shared_ptr<ComputePipeline> DeviceImpl::CreateComputePipeline(const ComputePipelineDesc& desc)
 {
   // TODO
@@ -106,5 +105,5 @@ std::shared_ptr<ShaderTable> DeviceImpl::CreateShaderTable(const ShaderTableDesc
   return nullptr;
 }
 
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

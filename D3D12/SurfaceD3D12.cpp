@@ -122,5 +122,5 @@ void SurfaceImpl::Present()
   CHECK_HR(ToBackend(m_Device->GetQueue())->GetNativeQueue()->Signal(m_Fence.Get(), ++m_NextFenceValue));
   m_FenceValues[m_FrameIndex] = m_NextFenceValue;
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

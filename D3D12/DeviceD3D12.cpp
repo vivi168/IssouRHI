@@ -526,5 +526,5 @@ void DeviceImpl::FreeDsvDescriptor(DescriptorAllocation alloc)
 {
   m_DsvDescriptorHeap.Free(alloc);
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

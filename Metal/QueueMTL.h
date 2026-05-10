@@ -54,5 +54,5 @@ private:
 };
 
 inline QueueImpl* ToBackend(Queue* q) { return static_cast<QueueImpl*>(q); }
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

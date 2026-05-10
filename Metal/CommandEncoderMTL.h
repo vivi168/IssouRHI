@@ -86,5 +86,5 @@ public:
 public:
   id<MTL4CommandBuffer> GetNativeCommandBuffer() const { return ToBackend(m_CommandBuffer)->GetNativeCommandBuffer(); }
 };
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

@@ -15,7 +15,7 @@ CommandBufferImpl::~CommandBufferImpl() = default;
 void CommandBufferImpl::Create()
 {
   auto device = ToBackend(m_Device)->GetNativeDevice();
-  
+
   m_CommandAllocator = [device newCommandAllocator];
 
   m_CommandBuffer = [device newCommandBuffer];
@@ -43,7 +43,7 @@ QueueImpl::~QueueImpl()
 void QueueImpl::Create()
 {
   auto device = ToBackend(m_Device)->GetNativeDevice();
-  
+
   m_CommandQueue = [device newMTL4CommandQueue];
 
   m_Fence = [device newSharedEvent];
@@ -76,7 +76,7 @@ void QueueImpl::WaitForAll()
 {
   const uint64_t fenceValue = m_NextFenceValue++;
   [m_CommandQueue signalEvent:m_Fence value:fenceValue];
-  
+
   if ([m_Fence signaledValue] < fenceValue) {
     [m_Fence waitUntilSignaledValue:fenceValue timeoutMS:UINT64_MAX];
   }
@@ -91,5 +91,5 @@ std::unique_ptr<CommandBuffer> QueueImpl::CreateCommandBufferImpl()
 {
   return std::make_unique<CommandBufferImpl>(m_Device);
 }
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

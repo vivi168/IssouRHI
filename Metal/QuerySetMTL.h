@@ -8,7 +8,6 @@ namespace MTL
 {
 class QuerySetImpl : public QuerySet
 {
-
 };
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

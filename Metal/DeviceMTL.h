@@ -6,7 +6,8 @@ namespace IssouRHI
 {
 namespace MTL
 {
-class DeviceImpl : public Device {
+class DeviceImpl : public Device
+{
 public:
   DeviceImpl(const GPUSelection& gpuSelection);
   ~DeviceImpl() override;
@@ -35,5 +36,5 @@ private:
 };
 
 inline DeviceImpl* ToBackend(Device* device) { return static_cast<DeviceImpl*>(device); }
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

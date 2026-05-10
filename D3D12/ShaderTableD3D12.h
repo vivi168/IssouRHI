@@ -10,10 +10,10 @@ namespace D3D12
 class ShaderTableImpl : public ShaderTable
 {
 public:
-   ShaderTableImpl(Device* device);
-   ~ShaderTableImpl() override;
+  ShaderTableImpl(Device* device);
+  ~ShaderTableImpl() override;
 
-   void Create(const ShaderTableDesc& desc) override;
+  void Create(const ShaderTableDesc& desc) override;
 
 public:
   D3D12_GPU_VIRTUAL_ADDRESS_RANGE RayGenShaderRecord() const;
@@ -23,5 +23,5 @@ public:
 };
 
 inline ShaderTableImpl* ToBackend(ShaderTable* st) { return static_cast<ShaderTableImpl*>(st); }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

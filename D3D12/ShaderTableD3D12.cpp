@@ -118,5 +118,5 @@ D3D12_GPU_VIRTUAL_ADDRESS_RANGE_AND_STRIDE ShaderTableImpl::CallableShaderTable(
       .StrideInBytes = RecordAlignment,
   };
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

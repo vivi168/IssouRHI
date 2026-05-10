@@ -40,11 +40,11 @@ inline TextureImpl* ToBackend(Texture* tex) { return static_cast<TextureImpl*>(t
 class TextureViewImpl : public TextureView
 {
 public:
-   TextureViewImpl(Texture* tex, const TextureViewDesc& desc);
-   ~TextureViewImpl() override;
+  TextureViewImpl(Texture* tex, const TextureViewDesc& desc);
+  ~TextureViewImpl() override;
 
-   uint32_t DescriptorIndex(TextureAccess access) const override;
-   uint64_t DescriptorHandle(TextureAccess access) const override;
+  uint32_t DescriptorIndex(TextureAccess access) const override;
+  uint64_t DescriptorHandle(TextureAccess access) const override;
 
 public:
   void AllocDescriptors();

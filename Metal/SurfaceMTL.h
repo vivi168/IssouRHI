@@ -22,5 +22,5 @@ private:
   CAMetalLayer* m_Layer = nil;
   id<CAMetalDrawable> m_Drawable;
 };
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

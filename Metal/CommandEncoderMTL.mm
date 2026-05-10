@@ -65,7 +65,7 @@ void CommandEncoderImpl::WriteTimestamp(QuerySet* querySet, uint32_t index)
 {
   // TODO
 }
- 
+
 CommandBuffer* CommandEncoderImpl::Finish()
 {
   [ToBackend(m_CommandBuffer)->GetNativeCommandBuffer() endCommandBuffer];
@@ -165,5 +165,5 @@ void RayTracingPassEncoderImpl::TraceRays(ShaderTable* shaderTable, uint32_t wid
 {
   // TODO
 }
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

@@ -57,5 +57,4 @@ Extent3D Texture::SizeAtMipLevel(uint32_t level) const
 TextureView::TextureView(Texture* tex, const TextureViewDesc& desc) : m_Texture(tex), m_Desc(desc) {}
 
 TextureView::~TextureView() = default;
-
 }  // namespace IssouRHI

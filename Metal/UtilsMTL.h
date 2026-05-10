@@ -37,5 +37,5 @@ inline MTLPixelFormat ToMTLPixelFormat(TextureFormat format)
       std::unreachable();
   }
 }
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

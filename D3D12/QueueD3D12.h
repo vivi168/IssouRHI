@@ -9,12 +9,12 @@ namespace D3D12
 class CommandBufferImpl : public CommandBuffer
 {
 public:
-   CommandBufferImpl(Device* device);
-   ~CommandBufferImpl() override;
+  CommandBufferImpl(Device* device);
+  ~CommandBufferImpl() override;
 
-   void Create() override;
-   void Init() override;
-   void Reset() override;
+  void Create() override;
+  void Init() override;
+  void Reset() override;
 
 public:
   void SetComputeRootSignatureIfNeeded();
@@ -64,5 +64,5 @@ private:
 };
 
 inline QueueImpl* ToBackend(Queue* q) { return static_cast<QueueImpl*>(q); }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

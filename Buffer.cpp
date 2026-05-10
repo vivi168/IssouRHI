@@ -13,5 +13,4 @@ BufferRange Buffer::ClampBufferRange(BufferRange range)
 
   return range;
 }
-
 }  // namespace IssouRHI

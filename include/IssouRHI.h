@@ -634,7 +634,7 @@ public:
   virtual void Create(const ComputePipelineDesc& desc) = 0;
 
 protected:
-    Device* m_Device;
+  Device* m_Device;
 };
 
 enum ColorWriteFlags : uint8_t {
@@ -859,7 +859,7 @@ public:
 
   virtual void Create(const ShaderTableDesc& desc) = 0;
 
-  protected:
+protected:
   Device* m_Device;
 
   std::shared_ptr<Buffer> m_Buffer;
@@ -881,9 +881,9 @@ struct SurfaceConfiguration;
 class Surface;
 
 enum class Backend {
-    D3D12,
-    Metal,
-    Vulkan,
+  D3D12,
+  Metal,
+  Vulkan,
 };
 
 class Device

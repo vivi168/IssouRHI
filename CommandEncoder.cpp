@@ -30,5 +30,4 @@ RayTracingPassEncoder::~RayTracingPassEncoder()
 {
   assert(m_Ended);
 }
-
 }  // namespace IssouRHI

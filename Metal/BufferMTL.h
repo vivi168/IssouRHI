@@ -8,7 +8,6 @@ namespace MTL
 {
 class BufferImpl : public Buffer
 {
-
 };
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI

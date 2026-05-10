@@ -79,5 +79,5 @@ void SurfaceImpl::Present()
 
   m_Drawable = nil;
 };
-}
-}
+}  // namespace MTL
+}  // namespace IssouRHI
