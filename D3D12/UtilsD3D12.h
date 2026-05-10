@@ -24,6 +24,10 @@ inline DXGI_FORMAT DXGIFormat(TextureFormat format)
       return DXGI_FORMAT_BC5_UNORM;
     case TextureFormat::BC7Unorm:
       return DXGI_FORMAT_BC7_UNORM;
+    case TextureFormat::BGRA8Unorm:
+      return DXGI_FORMAT_B8G8R8A8_UNORM;
+    case TextureFormat::BGRA8Unorm_sRGB:
+      return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
     case TextureFormat::Depth32Float:
       return DXGI_FORMAT_D32_FLOAT;
     case TextureFormat::R8Unorm:
@@ -39,7 +43,7 @@ inline DXGI_FORMAT DXGIFormat(TextureFormat format)
     case TextureFormat::RGBA32Float:
       return DXGI_FORMAT_R32G32B32A32_FLOAT;
     default:
-      std::unreachable(); // FIXME
+      std::unreachable(); // TODO: add missing formats
   }
 }
 

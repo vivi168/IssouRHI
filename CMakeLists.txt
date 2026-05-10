@@ -26,7 +26,11 @@ if(MSVC)
     target_compile_options(IssouRHI_common INTERFACE /W4 /permissive-)
     target_compile_definitions(IssouRHI_common INTERFACE WIN32_LEAN_AND_MEAN NOMINMAX UNICODE _UNICODE)
 else()
-    # TODO Wall Wextra
+    target_compile_options(IssouRHI_common INTERFACE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
 endif()
 
 add_library(IssouRHI)
@@ -93,5 +97,43 @@ if(BUILD_D3D12_BACKEND)
             D3D12/UtilsD3D12.cpp
     )
 elseif(BUILD_METAL_BACKEND)
-    # TODO
+    enable_language(OBJCXX)
+
+    set_target_properties(IssouRHI PROPERTIES OBJCXX_STANDARD 23)
+
+    target_compile_options(IssouRHI PRIVATE
+        $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>
+    )
+
+    if (XCODE)
+        set_target_properties(IssouRHI PROPERTIES
+            XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES
+        )
+    endif()
+
+    target_compile_definitions(IssouRHI PUBLIC BUILD_METAL_BACKEND)
+
+    target_link_libraries(IssouRHI
+        PRIVATE
+            "-framework Foundation"
+            "-framework QuartzCore"
+            "-framework Metal"
+            "-framework AppKit"
+    )
+
+    target_sources(IssouRHI
+        PRIVATE
+            Metal/AccelerationStructureMTL.mm
+            Metal/BufferMTL.mm
+            Metal/CommandEncoderMTL.mm
+            Metal/DeviceMTL.mm
+            #Metal/InteropMTL.mm
+            Metal/PipelineMTL.mm
+            Metal/QuerySetMTL.mm
+            Metal/QueueMTL.mm
+            Metal/ShaderTableMTL.mm
+            Metal/SurfaceMTL.mm
+            Metal/TextureMTL.mm
+            Metal/UtilsMTL.mm
+    )
 endif()

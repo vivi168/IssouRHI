@@ -235,6 +235,8 @@ enum class TextureFormat : uint32_t {
   Undefined,
   BC5Unorm,
   BC7Unorm,
+  BGRA8Unorm,
+  BGRA8Unorm_sRGB,
   Depth32Float,
   R8Unorm,
   RG8Unorm,
@@ -931,24 +933,21 @@ public:
   virtual ~Surface();
 
   virtual void Create() = 0;
+  virtual void Configure(SurfaceConfiguration& config) = 0;
 
-  void Configure(SurfaceConfiguration& config);
   virtual std::shared_ptr<Texture> GetCurrentTexture() = 0;
   virtual void Present() = 0;
 
   uint32_t CurrentFrameIndex() const { return m_FrameIndex; }
 
 protected:
-  virtual void CreateSwapChain(SurfaceConfiguration& config) = 0;
-  virtual void CreateTextures(SurfaceConfiguration& config) = 0;
-
   Device* m_Device;
   void* m_Handle;
 
-  std::vector<std::shared_ptr<Texture>> m_Textures;
-
   uint32_t m_FrameIndex;
   bool m_EnableVsync = false;
+
+  SurfaceConfiguration m_Config;
   bool m_Configured = false;
 };
 
