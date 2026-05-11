@@ -44,6 +44,7 @@ target_sources(IssouRHI
         Pipeline.cpp
         QuerySet.cpp
         Queue.cpp
+        ShaderLibrary.cpp
         ShaderTable.cpp
         Surface.cpp
         Texture.cpp
@@ -131,6 +132,7 @@ elseif(BUILD_METAL_BACKEND)
             Metal/PipelineMTL.mm
             Metal/QuerySetMTL.mm
             Metal/QueueMTL.mm
+            Metal/ShaderLibraryMTL.mm
             Metal/ShaderTableMTL.mm
             Metal/SurfaceMTL.mm
             Metal/TextureMTL.mm

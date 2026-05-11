@@ -457,6 +457,14 @@ std::shared_ptr<AccelerationStructure> DeviceImpl::CreateAccelerationStructure(c
   return as;
 }
 
+std::shared_ptr<ShaderLibrary> DeviceImpl::CreateShaderLibrary(std::span<std::byte> data)
+{
+  auto lib = std::make_shared<ShaderLibraryImpl>(this);
+  lib->Create(data);
+
+  return lib;
+}
+
 std::shared_ptr<ComputePipeline> DeviceImpl::CreateComputePipeline(const ComputePipelineDesc& desc)
 {
   auto computePipeline = std::make_shared<ComputePipelineImpl>(this);

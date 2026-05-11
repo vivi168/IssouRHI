@@ -9,7 +9,7 @@ namespace MTL
 class TextureImpl : public Texture
 {
 public:
-  TextureImpl(Device* device, const TextureDesc& desc);
+  TextureImpl(Device* device, const TextureDesc& desc, bool frameBufferOnly = false);
   ~TextureImpl() override;
 
   void Create() override;
@@ -19,10 +19,12 @@ public:
   std::shared_ptr<TextureView> CreateView(const TextureViewDesc& desc) override;
 
 public:
-  void Wrap(id<MTLTexture> texture);
+  void Wrap(id<MTLTexture> textureView);
 
 private:
   id<MTLTexture> m_Texture;
+
+  bool m_FrameBufferOnly = false;
 };
 
 inline TextureImpl* ToBackend(Texture* tex) { return static_cast<TextureImpl*>(tex); }
@@ -33,11 +35,17 @@ public:
   TextureViewImpl(Texture* tex, const TextureViewDesc& desc);
   ~TextureViewImpl() override;
 
-  uint32_t DescriptorIndex(TextureAccess access) const override;
-  uint64_t DescriptorHandle(TextureAccess access) const override;
+  uint32_t DescriptorIndex(TextureAccess) const override { return 0; }
+
+  uint64_t DescriptorHandle(TextureAccess) const override { return 0; }
 
 public:
+  id<MTLTexture> GetNativeTextureView() const { return m_TextureView; }
+
+  void Wrap(id<MTLTexture> texture);
+
 private:
+  id<MTLTexture> m_TextureView;
 };
 
 inline TextureViewImpl* ToBackend(TextureView* tv) { return static_cast<TextureViewImpl*>(tv); }

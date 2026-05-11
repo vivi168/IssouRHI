@@ -7,6 +7,7 @@
 #include "PipelineMTL.h"
 #include "QuerySetMTL.h"
 #include "QueueMTL.h"
+#include "ShaderLibraryMTL.h"
 #include "ShaderTableMTL.h"
 #include "SurfaceMTL.h"
 #include "TextureMTL.h"
@@ -37,6 +38,14 @@ void DeviceImpl::Create(const GPUSelection&)
   {
     m_Queue = std::make_unique<QueueImpl>(this);
     m_Queue->Create();
+  }
+
+  // Compiler
+  {
+    MTL4CompilerDescriptor* compiler_desc = [[MTL4CompilerDescriptor alloc] init];
+
+    NSError* err = nil;
+    m_Compiler = [m_Device newCompilerWithDescriptor:compiler_desc error:&err];
   }
 }
 
@@ -75,16 +84,28 @@ std::shared_ptr<AccelerationStructure> DeviceImpl::CreateAccelerationStructure(c
   return nullptr;
 }
 
+std::shared_ptr<ShaderLibrary> DeviceImpl::CreateShaderLibrary(std::span<std::byte> data)
+{
+  auto lib = std::make_shared<ShaderLibraryImpl>(this);
+  lib->Create(data);
+
+  return lib;
+}
+
 std::shared_ptr<ComputePipeline> DeviceImpl::CreateComputePipeline(const ComputePipelineDesc& desc)
 {
-  // TODO
-  return nullptr;
+  auto computePipeline = std::make_shared<ComputePipelineImpl>(this);
+  computePipeline->Create(desc);
+
+  return computePipeline;
 }
 
 std::shared_ptr<RenderPipeline> DeviceImpl::CreateRenderPipeline(const RenderPipelineDesc& desc)
 {
-  // TODO
-  return nullptr;
+  auto renderPipeline = std::make_shared<RenderPipelineImpl>(this, RenderPipeline::Type::Render);
+  renderPipeline->Create(desc);
+
+  return renderPipeline;
 }
 
 std::shared_ptr<RenderPipeline> DeviceImpl::CreateMeshPipeline(const RenderPipelineDesc& desc)

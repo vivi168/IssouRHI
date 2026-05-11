@@ -69,6 +69,11 @@ public:
 
 public:
   id<MTL4CommandBuffer> GetNativeCommandBuffer() const { return ToBackend(m_CommandBuffer)->GetNativeCommandBuffer(); }
+
+  void Wrap(id<MTL4RenderCommandEncoder> encoder);
+
+private:
+  id<MTL4RenderCommandEncoder> m_Encoder;
 };
 
 class RayTracingPassEncoderImpl : public RayTracingPassEncoder

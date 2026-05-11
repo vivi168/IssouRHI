@@ -23,6 +23,7 @@ public:
   std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc) override;
   std::shared_ptr<AccelerationStructure> CreateAccelerationStructure(const AccelerationStructureDesc& desc) override;
 
+  std::shared_ptr<ShaderLibrary> CreateShaderLibrary(std::span<std::byte> data) override;
   std::shared_ptr<ComputePipeline> CreateComputePipeline(const ComputePipelineDesc& desc) override;
   std::shared_ptr<RenderPipeline> CreateRenderPipeline(const RenderPipelineDesc& desc) override;
   std::shared_ptr<RenderPipeline> CreateMeshPipeline(const RenderPipelineDesc& desc) override;

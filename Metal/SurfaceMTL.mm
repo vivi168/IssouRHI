@@ -59,7 +59,7 @@ std::shared_ptr<Texture> SurfaceImpl::GetCurrentTexture()
     desc.format = m_Config.format;
     desc.usage = TextureUsage::RenderAttachment;
 
-    auto tex = std::make_shared<TextureImpl>(m_Device, desc);
+    auto tex = std::make_shared<TextureImpl>(m_Device, desc, true);
     tex->Wrap([m_Drawable texture]);
 
     return tex;

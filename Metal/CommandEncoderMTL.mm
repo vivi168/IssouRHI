@@ -25,8 +25,61 @@ std::unique_ptr<ComputePassEncoder> CommandEncoderImpl::BeginComputePass(const C
 
 std::unique_ptr<RenderPassEncoder> CommandEncoderImpl::BeginRenderPass(const RenderPassDesc& desc)
 {
-  // TODO
-  return nullptr;
+  if (desc.timestampWrites.has_value()) {
+    // TODO
+  }
+
+  MTL4RenderPassDescriptor* pass_desc = [[MTL4RenderPassDescriptor alloc] init];
+
+  for (size_t i = 0; i < desc.colorAttachment.size(); i++) {
+    const auto& colorAttachment = desc.colorAttachment[i];
+    MTLRenderPassColorAttachmentDescriptor* colorAttachmentDesc = pass_desc.colorAttachments[i];
+
+    colorAttachmentDesc.texture = ToBackend(colorAttachment.view)->GetNativeTextureView();
+    colorAttachmentDesc.slice = colorAttachment.depthSlice;
+
+    // TODO: function
+    const auto& c = colorAttachment.clearValue;
+    colorAttachmentDesc.clearColor = MTLClearColorMake(c.r, c.g, c.b, c.a);
+
+    // TODO: function
+    switch (colorAttachment.loadOp) {
+      case LoadOp::Clear:
+        colorAttachmentDesc.loadAction = MTLLoadActionClear;
+        break;
+      case LoadOp::Load:
+        colorAttachmentDesc.loadAction = MTLLoadActionLoad;
+        break;
+      case LoadOp::DontCare:
+        colorAttachmentDesc.loadAction = MTLLoadActionDontCare;
+        break;
+    }
+
+    // TODO: function
+    switch (colorAttachment.storeOp) {
+      case StoreOp::Store:
+        colorAttachmentDesc.storeAction = MTLStoreActionStore;
+        break;
+      case StoreOp::Discard:
+        colorAttachmentDesc.storeAction = MTLStoreActionDontCare;
+        break;
+    }
+
+    if (colorAttachment.resolveTarget) {
+      colorAttachmentDesc.resolveTexture = ToBackend(colorAttachment.resolveTarget)->GetNativeTextureView();
+      colorAttachmentDesc.storeAction = MTLStoreActionMultisampleResolve;
+    }
+  }
+
+  // TODO: DepthStencilAttachment
+
+  auto cmdBuffer = ToBackend(m_CommandBuffer)->GetNativeCommandBuffer();
+  id<MTL4RenderCommandEncoder> cmdEncoder = [cmdBuffer renderCommandEncoderWithDescriptor:pass_desc];
+
+  auto passEncoder = std::make_unique<RenderPassEncoderImpl>(desc, m_CommandBuffer);
+  passEncoder->Wrap(cmdEncoder);
+
+  return passEncoder;
 }
 
 std::unique_ptr<RayTracingPassEncoder> CommandEncoderImpl::BeginRayTracingPass(const RayTracingPassDesc& desc)
@@ -106,9 +159,18 @@ RenderPassEncoderImpl::RenderPassEncoderImpl(const RenderPassDesc& desc, Command
 
 RenderPassEncoderImpl::~RenderPassEncoderImpl() = default;
 
+void RenderPassEncoderImpl::Wrap(id<MTL4RenderCommandEncoder> encoder)
+{
+  m_Encoder = encoder;
+}
+
 void RenderPassEncoderImpl::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
 {
-  // TODO
+  [m_Encoder drawPrimitives:MTLPrimitiveTypeTriangle
+                vertexStart:firstVertex
+                vertexCount:vertexCount
+              instanceCount:instanceCount
+               baseInstance:firstInstance];
 }
 
 void RenderPassEncoderImpl::DrawMeshIndirect(Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer, uint64_t countOffset)
@@ -125,6 +187,8 @@ void RenderPassEncoderImpl::End()
     // TODO
   }
 
+  [m_Encoder endEncoding];
+
   m_Ended = true;
 }
 
@@ -135,7 +199,7 @@ void RenderPassEncoderImpl::PushConstants(uint32_t offset, uint32_t size, const 
 
 void RenderPassEncoderImpl::SetPipeline(RenderPipeline* pipeline)
 {
-  // TODO
+  [m_Encoder setRenderPipelineState:ToBackend(pipeline)->PipelineState()];
 }
 
 RayTracingPassEncoderImpl::RayTracingPassEncoderImpl(const RayTracingPassDesc& desc, CommandBuffer* commandBuffer) : RayTracingPassEncoder(desc, commandBuffer) {}

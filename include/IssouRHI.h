@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #ifdef _DEBUG
@@ -613,10 +614,21 @@ enum class ShaderStage {
   Callable,
 };
 
+class ShaderLibrary
+{
+public:
+  ShaderLibrary(Device* device);
+  virtual ~ShaderLibrary();
+
+  virtual void Create(std::span<std::byte> code) = 0;
+
+protected:
+  Device* m_Device;
+};
+
 struct ShaderModule {
+  ShaderLibrary* library;
   ShaderStage stage;
-  const void* code;
-  size_t size;
   std::optional<std::string> entryPointName = std::nullopt;
 };
 
@@ -905,6 +917,7 @@ public:
   virtual std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc) = 0;
   virtual std::shared_ptr<AccelerationStructure> CreateAccelerationStructure(const AccelerationStructureDesc& desc) = 0;
 
+  virtual std::shared_ptr<ShaderLibrary> CreateShaderLibrary(std::span<std::byte> data) = 0;
   virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const ComputePipelineDesc& desc) = 0;
   virtual std::shared_ptr<RenderPipeline> CreateRenderPipeline(const RenderPipelineDesc& desc) = 0;
   virtual std::shared_ptr<RenderPipeline> CreateMeshPipeline(const RenderPipelineDesc& desc) = 0;
@@ -1102,7 +1115,10 @@ enum class LoadOp {
   DontCare,
 };
 
-// enum class StoreOp { Store, Discard };
+enum class StoreOp {
+  Store,
+  Discard,
+};
 
 struct ColorAttachment {
   TextureView* view;
@@ -1110,7 +1126,7 @@ struct ColorAttachment {
   TextureView* resolveTarget = nullptr;
   Color clearValue;
   LoadOp loadOp = LoadOp::Clear;
-  // StoreOp storeOp;
+  StoreOp storeOp = StoreOp::Store;
 };
 
 struct DepthStencilAttachment {
@@ -1127,7 +1143,7 @@ struct DepthStencilAttachment {
 
 struct RenderPassDesc {
   std::string label;
-  std::span<ColorAttachment> colorAttachment;
+  std::span<ColorAttachment> colorAttachment;  // TODO: rename to colorAttachments
   DepthStencilAttachment depthStencilAttachment{};
   std::optional<TimestampWrites> timestampWrites = std::nullopt;
 };

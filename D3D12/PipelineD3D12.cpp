@@ -11,6 +11,7 @@ ComputePipelineImpl::ComputePipelineImpl(Device* device) : ComputePipeline(devic
 
 ComputePipelineImpl::~ComputePipelineImpl() = default;
 
+// FIXME: on windows machine don't forget to refactor with the new ShaderLibraryImpl
 static D3D12_SHADER_BYTECODE D3D12ShaderByteCode(const ShaderModule& shader)
 {
   return D3D12_SHADER_BYTECODE{

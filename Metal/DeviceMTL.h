@@ -22,6 +22,7 @@ public:
   std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc) override;
   std::shared_ptr<AccelerationStructure> CreateAccelerationStructure(const AccelerationStructureDesc& desc) override;
 
+  std::shared_ptr<ShaderLibrary> CreateShaderLibrary(std::span<std::byte> data) override;
   std::shared_ptr<ComputePipeline> CreateComputePipeline(const ComputePipelineDesc& desc) override;
   std::shared_ptr<RenderPipeline> CreateRenderPipeline(const RenderPipelineDesc& desc) override;
   std::shared_ptr<RenderPipeline> CreateMeshPipeline(const RenderPipelineDesc& desc) override;
@@ -31,8 +32,11 @@ public:
 public:
   id<MTLDevice> GetNativeDevice() const { return m_Device; }
 
+  id<MTL4Compiler> Compiler() const { return m_Compiler; }
+
 private:
   id<MTLDevice> m_Device;
+  id<MTL4Compiler> m_Compiler;
 };
 
 inline DeviceImpl* ToBackend(Device* device) { return static_cast<DeviceImpl*>(device); }
