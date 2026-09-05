@@ -63,7 +63,7 @@ std::unique_ptr<RenderPassEncoder> CommandEncoderImpl::BeginRenderPass(const Ren
   Extent3D referenceSize;
   // FIXME: also validate that sampleCount matches between targets
 
-  for (const auto& colorAttachment : desc.colorAttachment) {
+  for (const auto& colorAttachment : desc.colorAttachments) {
     if (colorAttachment.view != nullptr) {
       auto rtvHandle = ToBackend(colorAttachment.view)->RtvDescriptorAlloc().cpuHandle;
       rtvHandles.push_back(rtvHandle);

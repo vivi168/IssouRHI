@@ -31,7 +31,7 @@ std::unique_ptr<RenderPassEncoder> CommandEncoderImpl::BeginRenderPass(const Ren
 
   MTL4RenderPassDescriptor* pass_desc = [[MTL4RenderPassDescriptor alloc] init];
 
-  for (size_t i = 0; i < desc.colorAttachment.size(); i++) {
+  for (size_t i = 0; i < desc.colorAttachments.size(); i++) {
     const auto& colorAttachment = desc.colorAttachment[i];
     MTLRenderPassColorAttachmentDescriptor* colorAttachmentDesc = pass_desc.colorAttachments[i];
 

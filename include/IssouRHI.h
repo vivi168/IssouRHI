@@ -1143,7 +1143,7 @@ struct DepthStencilAttachment {
 
 struct RenderPassDesc {
   std::string label;
-  std::span<ColorAttachment> colorAttachment;  // TODO: rename to colorAttachments
+  std::span<ColorAttachment> colorAttachments;
   DepthStencilAttachment depthStencilAttachment{};
   std::optional<TimestampWrites> timestampWrites = std::nullopt;
 };
