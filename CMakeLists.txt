@@ -92,6 +92,7 @@ if(BUILD_D3D12_BACKEND)
             D3D12/PipelineD3D12.cpp
             D3D12/QuerySetD3D12.cpp
             D3D12/QueueD3D12.cpp
+            D3D12/ShaderLibraryD3D12.cpp
             D3D12/ShaderTableD3D12.cpp
             D3D12/SurfaceD3D12.cpp
             D3D12/TextureD3D12.cpp

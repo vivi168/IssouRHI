@@ -1,6 +1,7 @@
 #include "PipelineD3D12.h"
 
 #include "DeviceD3D12.h"
+#include "ShaderLibraryD3D12.h"
 #include "UtilsD3D12.h"
 
 namespace IssouRHI
@@ -11,22 +12,13 @@ ComputePipelineImpl::ComputePipelineImpl(Device* device) : ComputePipeline(devic
 
 ComputePipelineImpl::~ComputePipelineImpl() = default;
 
-// FIXME: on windows machine don't forget to refactor with the new ShaderLibraryImpl
-static D3D12_SHADER_BYTECODE D3D12ShaderByteCode(const ShaderModule& shader)
-{
-  return D3D12_SHADER_BYTECODE{
-      .pShaderBytecode = shader.code,
-      .BytecodeLength = shader.size,
-  };
-}
-
 void ComputePipelineImpl::Create(const ComputePipelineDesc& desc)
 {
   D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc{};
   psoDesc.pRootSignature = ToBackend(m_Device)->RootSignature();
 
   assert(desc.shader.stage == ShaderStage::Compute);
-  psoDesc.CS = D3D12ShaderByteCode(desc.shader);
+  psoDesc.CS = ToBackend(desc.shader.library)->GetNativeLibrary();
 
   ID3D12PipelineState* pipelineStateObject;
   CHECK_HR(ToBackend(m_Device)->GetNativeDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineStateObject)));
@@ -320,9 +312,9 @@ void RenderPipelineImpl::Create(const RenderPipelineDesc& desc)
 
       for (const auto& shader : desc.shaders) {
         if (shader.stage == ShaderStage::Fragment) {
-          psoDesc.PS = D3D12ShaderByteCode(shader);
+          psoDesc.PS = ToBackend(shader.library)->GetNativeLibrary();
         } else if (shader.stage == ShaderStage::Vertex) {
-          psoDesc.VS = D3D12ShaderByteCode(shader);
+          psoDesc.VS = ToBackend(shader.library)->GetNativeLibrary();
         }
       }
 
@@ -342,11 +334,11 @@ void RenderPipelineImpl::Create(const RenderPipelineDesc& desc)
 
       for (const auto& shader : desc.shaders) {
         if (shader.stage == ShaderStage::Fragment) {
-          psoDesc.PS = D3D12ShaderByteCode(shader);
+          psoDesc.PS = ToBackend(shader.library)->GetNativeLibrary();
         } else if (shader.stage == ShaderStage::Mesh) {
-          psoDesc.MS = D3D12ShaderByteCode(shader);
+          psoDesc.MS = ToBackend(shader.library)->GetNativeLibrary();
         } else if (shader.stage == ShaderStage::Task) {
-          psoDesc.AS = D3D12ShaderByteCode(shader);
+          psoDesc.AS = ToBackend(shader.library)->GetNativeLibrary();
         }
       }
 
@@ -393,9 +385,10 @@ void RayTracingPipelineImpl::Create(const RayTracingPipelineDesc& desc)
   CD3DX12_STATE_OBJECT_DESC raytracingPipeline{D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE};
   std::vector<D3D12_SHADER_BYTECODE> byteCodes(desc.shaders.size());
 
+  // FIXME: if we use a single library, somehow detect it and don't create multiple subobject
   for (size_t i = 0; i < desc.shaders.size(); ++i) {
     const auto& shader = desc.shaders[i];
-    byteCodes[i] = D3D12ShaderByteCode(shader);
+    byteCodes[i] = ToBackend(shader.library)->GetNativeLibrary();
 
     auto lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
     lib->SetDXILLibrary(&byteCodes[i]);

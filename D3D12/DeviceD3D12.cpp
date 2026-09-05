@@ -5,6 +5,7 @@
 #include "PipelineD3D12.h"
 #include "QuerySetD3D12.h"
 #include "QueueD3D12.h"
+#include "ShaderLibraryD3D12.h"
 #include "ShaderTableD3D12.h"
 #include "SurfaceD3D12.h"
 #include "TextureD3D12.h"
