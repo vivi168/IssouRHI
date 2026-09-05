@@ -1093,10 +1093,9 @@ public:
   ComputePassEncoder(const ComputePassDesc& desc, CommandBuffer* commandBuffer);
   virtual ~ComputePassEncoder();
 
-  virtual void Dispatch(uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
+  virtual void Dispatch(std::span<const std::byte> args, uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
   // TODO: virtual DispatchIndirect(indirectBuffer, indirectOffset)
   virtual void End() = 0;
-  virtual void PushConstants(uint32_t offset, uint32_t size, const void* data) = 0;
   virtual void SetPipeline(ComputePipeline* pipeline) = 0;
 
 protected:
@@ -1154,14 +1153,13 @@ public:
   RenderPassEncoder(const RenderPassDesc& desc, CommandBuffer* commandBuffer);
   virtual ~RenderPassEncoder();
 
-  virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
+  virtual void Draw(std::span<const std::byte> args, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
   // TODO: DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
   // TODO: DrawIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawIndexedIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawMesh();
-  virtual void DrawMeshIndirect(Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
+  virtual void DrawMeshIndirect(std::span<const std::byte> args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
   virtual void End() = 0;
-  virtual void PushConstants(uint32_t offset, uint32_t size, const void* data) = 0;
   virtual void SetPipeline(RenderPipeline* pipeline) = 0;
 
 protected:
@@ -1183,9 +1181,8 @@ public:
   virtual ~RayTracingPassEncoder();
 
   virtual void End() = 0;
-  virtual void PushConstants(uint32_t offset, uint32_t size, const void* data) = 0;
   virtual void SetPipeline(RayTracingPipeline* pipeline) = 0;
-  virtual void TraceRays(ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) = 0;
+  virtual void TraceRays(std::span<const std::byte> args, ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) = 0;
   // TODO: TraceRaysIndirect
 
 protected:

@@ -220,11 +220,10 @@ void DeviceImpl::Create(const GPUSelection& gpuSelection)
   {
     // Root parameters
     constexpr UINT RootParameterCount = 2;
-    constexpr UINT ConstantCount = 32;
     constexpr UINT IndirectArgumentConstantCount = 1;
 
     CD3DX12_ROOT_PARAMETER rootParameters[RootParameterCount]{};
-    rootParameters[0].InitAsConstants(ConstantCount, 0);
+    rootParameters[0].InitAsConstants(RootConstantCount, 0);
     // DX12 only CHEAT: inject indirect command buffer payload in the second root parameter. accessible via cbuffer (b1)
     rootParameters[1].InitAsConstants(IndirectArgumentConstantCount, 1);
 

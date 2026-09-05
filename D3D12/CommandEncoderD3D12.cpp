@@ -486,8 +486,14 @@ ComputePassEncoderImpl::ComputePassEncoderImpl(const ComputePassDesc& desc, Comm
 
 ComputePassEncoderImpl::~ComputePassEncoderImpl() = default;
 
-void ComputePassEncoderImpl::Dispatch(uint32_t x, uint32_t y, uint32_t z)
+void ComputePassEncoderImpl::Dispatch(std::span<const std::byte> args, uint32_t x, uint32_t y, uint32_t z)
 {
+  if (!args.empty()) {
+    assert(args.size() % sizeof(uint32_t) == 0);
+    assert(args.size() <= RootConstantCount * sizeof(uint32_t));
+    CommandList()->SetComputeRoot32BitConstants(0, static_cast<UINT>(args.size() / sizeof(uint32_t)), args.data(), 0);
+  }
+
   CommandList()->Dispatch(x, y, z);
 }
 
@@ -500,11 +506,6 @@ void ComputePassEncoderImpl::End()
   m_Ended = true;
 }
 
-void ComputePassEncoderImpl::PushConstants(uint32_t offset, uint32_t size, const void* data)
-{
-  CommandList()->SetComputeRoot32BitConstants(0, size, data, offset);
-}
-
 void ComputePassEncoderImpl::SetPipeline(ComputePipeline* pipeline)
 {
   CommandList()->SetPipelineState(ToBackend(pipeline)->PipelineState());
@@ -514,15 +515,27 @@ RenderPassEncoderImpl::RenderPassEncoderImpl(const RenderPassDesc& desc, Command
 
 RenderPassEncoderImpl::~RenderPassEncoderImpl() = default;
 
-void RenderPassEncoderImpl::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+void RenderPassEncoderImpl::Draw(std::span<const std::byte> args, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
 {
+  if (!args.empty()) {
+    assert(args.size() % sizeof(uint32_t) == 0);
+    assert(args.size() <= RootConstantCount * sizeof(uint32_t));
+    CommandList()->SetGraphicsRoot32BitConstants(0, static_cast<UINT>(args.size() / sizeof(uint32_t)), args.data(), 0);
+  }
+
   // TODO: track current pipeline / asssert render pipeline?
 
   CommandList()->DrawInstanced(vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void RenderPassEncoderImpl::DrawMeshIndirect(Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer, uint64_t countOffset)
+void RenderPassEncoderImpl::DrawMeshIndirect(std::span<const std::byte> args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer, uint64_t countOffset)
 {
+  if (!args.empty()) {
+    assert(args.size() % sizeof(uint32_t) == 0);
+    assert(args.size() <= RootConstantCount * sizeof(uint32_t));
+    CommandList()->SetGraphicsRoot32BitConstants(0, static_cast<UINT>(args.size() / sizeof(uint32_t)), args.data(), 0);
+  }
+
   ID3D12Resource* pCountBuffer = nullptr;
   if (countBuffer != nullptr) {
     pCountBuffer = ToBackend(countBuffer)->Resource();
@@ -545,11 +558,6 @@ void RenderPassEncoderImpl::End()
   m_Ended = true;
 }
 
-void RenderPassEncoderImpl::PushConstants(uint32_t offset, uint32_t size, const void* data)
-{
-  CommandList()->SetGraphicsRoot32BitConstants(0, size, data, offset);
-}
-
 void RenderPassEncoderImpl::SetPipeline(RenderPipeline* pipeline)
 {
   CommandList()->IASetPrimitiveTopology(ToBackend(pipeline)->NativePrimitiveTopology());
@@ -569,18 +577,19 @@ void RayTracingPassEncoderImpl::End()
   m_Ended = true;
 }
 
-void RayTracingPassEncoderImpl::PushConstants(uint32_t offset, uint32_t size, const void* data)
-{
-  CommandList()->SetComputeRoot32BitConstants(0, size, data, offset);
-}
-
 void RayTracingPassEncoderImpl::SetPipeline(RayTracingPipeline* pipeline)
 {
   CommandList()->SetPipelineState1(ToBackend(pipeline)->StateObject());
 }
 
-void RayTracingPassEncoderImpl::TraceRays(ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth)
+void RayTracingPassEncoderImpl::TraceRays(std::span<const std::byte> args, ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth)
 {
+  if (!args.empty()) {
+    assert(args.size() % sizeof(uint32_t) == 0);
+    assert(args.size() <= RootConstantCount * sizeof(uint32_t));
+    CommandList()->SetComputeRoot32BitConstants(0, static_cast<UINT>(args.size() / sizeof(uint32_t)), args.data(), 0);
+  }
+
   D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
 
   dispatchDesc.RayGenerationShaderRecord = ToBackend(shaderTable)->RayGenShaderRecord();
