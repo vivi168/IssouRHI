@@ -7,6 +7,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -1051,6 +1052,29 @@ struct BarriersDesc {
   std::span<TextureBarrierDesc> textures{};
 };
 
+struct ByteSpan {
+  ByteSpan() = default;
+
+  ByteSpan(std::span<const std::byte> bytes) : m_Bytes(bytes) {}
+
+  ByteSpan(std::span<std::byte> bytes) : m_Bytes(bytes) {}
+
+  template <typename T>
+    requires std::is_trivially_copyable_v<T>
+  ByteSpan(const T& value) : m_Bytes(std::as_bytes(std::span{&value, 1}))
+  {
+  }
+
+  const std::byte* data() const { return m_Bytes.data(); }
+
+  std::size_t size() const { return m_Bytes.size(); }
+
+  bool empty() const { return m_Bytes.empty(); }
+
+private:
+  std::span<const std::byte> m_Bytes;
+};
+
 class CommandEncoder
 {
 public:
@@ -1093,7 +1117,7 @@ public:
   ComputePassEncoder(const ComputePassDesc& desc, CommandBuffer* commandBuffer);
   virtual ~ComputePassEncoder();
 
-  virtual void Dispatch(std::span<const std::byte> args, uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
+  virtual void Dispatch(ByteSpan args, uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
   // TODO: virtual DispatchIndirect(indirectBuffer, indirectOffset)
   virtual void End() = 0;
   virtual void SetPipeline(ComputePipeline* pipeline) = 0;
@@ -1153,12 +1177,12 @@ public:
   RenderPassEncoder(const RenderPassDesc& desc, CommandBuffer* commandBuffer);
   virtual ~RenderPassEncoder();
 
-  virtual void Draw(std::span<const std::byte> args, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
+  virtual void Draw(ByteSpan args, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
   // TODO: DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
   // TODO: DrawIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawIndexedIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawMesh();
-  virtual void DrawMeshIndirect(std::span<const std::byte> args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
+  virtual void DrawMeshIndirect(ByteSpan args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
   virtual void End() = 0;
   virtual void SetPipeline(RenderPipeline* pipeline) = 0;
 
@@ -1182,7 +1206,7 @@ public:
 
   virtual void End() = 0;
   virtual void SetPipeline(RayTracingPipeline* pipeline) = 0;
-  virtual void TraceRays(std::span<const std::byte> args, ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) = 0;
+  virtual void TraceRays(ByteSpan args, ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) = 0;
   // TODO: TraceRaysIndirect
 
 protected:
