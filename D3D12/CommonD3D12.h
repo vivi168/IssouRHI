@@ -10,6 +10,11 @@
 
 #include <IssouRHI.h>
 
+namespace IssouRHI::D3D12
+{
+inline constexpr UINT RootConstantCount = 32;
+}
+
 #define STRINGIZE(x) STRINGIZE2(x)
 #define STRINGIZE2(x) #x
 #define LINE_STRING STRINGIZE(__LINE__)

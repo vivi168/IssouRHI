@@ -41,10 +41,9 @@ public:
   ComputePassEncoderImpl(const ComputePassDesc& desc, CommandBuffer* commandBuffer);
   ~ComputePassEncoderImpl() override;
 
-  void Dispatch(uint32_t x, uint32_t y = 1, uint32_t z = 1) override;
+  void Dispatch(ByteSpan args, uint32_t x, uint32_t y = 1, uint32_t z = 1) override;
   // TODO: DispatchIndirect(indirectBuffer, indirectOffset) override
   void End() override;
-  void PushConstants(uint32_t offset, uint32_t size, const void* data) override;
   void SetPipeline(ComputePipeline* pipeline) override;
 
 public:
@@ -57,14 +56,13 @@ public:
   RenderPassEncoderImpl(const RenderPassDesc& desc, CommandBuffer* commandBuffer);
   ~RenderPassEncoderImpl() override;
 
-  void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
+  void Draw(ByteSpan args, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
   // TODO: DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
   // TODO: DrawIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawIndexedIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawMesh();
-  void DrawMeshIndirect(Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) override;
+  void DrawMeshIndirect(ByteSpan args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) override;
   void End() override;
-  void PushConstants(uint32_t offset, uint32_t size, const void* data) override;
   void SetPipeline(RenderPipeline* pipeline) override;
 
 public:
@@ -78,9 +76,8 @@ public:
   ~RayTracingPassEncoderImpl() override;
 
   void End() override;
-  void PushConstants(uint32_t offset, uint32_t size, const void* data) override;
   void SetPipeline(RayTracingPipeline* pipeline) override;
-  void TraceRays(ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) override;
+  void TraceRays(ByteSpan args, ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) override;
   // TODO: TraceRaysIndirect
 
 public:

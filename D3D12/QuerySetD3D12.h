@@ -22,5 +22,5 @@ private:
 };
 
 inline QuerySetImpl* ToBackend(QuerySet* qs) { return static_cast<QuerySetImpl*>(qs); }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

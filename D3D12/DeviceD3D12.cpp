@@ -5,6 +5,7 @@
 #include "PipelineD3D12.h"
 #include "QuerySetD3D12.h"
 #include "QueueD3D12.h"
+#include "ShaderLibraryD3D12.h"
 #include "ShaderTableD3D12.h"
 #include "SurfaceD3D12.h"
 #include "TextureD3D12.h"
@@ -219,11 +220,10 @@ void DeviceImpl::Create(const GPUSelection& gpuSelection)
   {
     // Root parameters
     constexpr UINT RootParameterCount = 2;
-    constexpr UINT ConstantCount = 32;
     constexpr UINT IndirectArgumentConstantCount = 1;
 
     CD3DX12_ROOT_PARAMETER rootParameters[RootParameterCount]{};
-    rootParameters[0].InitAsConstants(ConstantCount, 0);
+    rootParameters[0].InitAsConstants(RootConstantCount, 0);
     // DX12 only CHEAT: inject indirect command buffer payload in the second root parameter. accessible via cbuffer (b1)
     rootParameters[1].InitAsConstants(IndirectArgumentConstantCount, 1);
 
@@ -457,6 +457,14 @@ std::shared_ptr<AccelerationStructure> DeviceImpl::CreateAccelerationStructure(c
   return as;
 }
 
+std::shared_ptr<ShaderLibrary> DeviceImpl::CreateShaderLibrary(std::span<std::byte> data)
+{
+  auto lib = std::make_shared<ShaderLibraryImpl>(this);
+  lib->Create(data);
+
+  return lib;
+}
+
 std::shared_ptr<ComputePipeline> DeviceImpl::CreateComputePipeline(const ComputePipelineDesc& desc)
 {
   auto computePipeline = std::make_shared<ComputePipelineImpl>(this);
@@ -526,5 +534,5 @@ void DeviceImpl::FreeDsvDescriptor(DescriptorAllocation alloc)
 {
   m_DsvDescriptorHeap.Free(alloc);
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

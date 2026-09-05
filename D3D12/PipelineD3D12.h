@@ -22,6 +22,7 @@ private:
 };
 
 inline ComputePipelineImpl* ToBackend(ComputePipeline* pipeline) { return static_cast<ComputePipelineImpl*>(pipeline); }
+
 inline const ComputePipelineImpl* ToBackend(const ComputePipeline* pipeline) { return static_cast<const ComputePipelineImpl*>(pipeline); }
 
 class RenderPipelineImpl : public RenderPipeline
@@ -44,6 +45,7 @@ private:
 };
 
 inline RenderPipelineImpl* ToBackend(RenderPipeline* pipeline) { return static_cast<RenderPipelineImpl*>(pipeline); }
+
 inline const RenderPipelineImpl* ToBackend(const RenderPipeline* pipeline) { return static_cast<const RenderPipelineImpl*>(pipeline); }
 
 class RayTracingPipelineImpl : public RayTracingPipeline
@@ -65,6 +67,7 @@ private:
 };
 
 inline RayTracingPipelineImpl* ToBackend(RayTracingPipeline* pipeline) { return static_cast<RayTracingPipelineImpl*>(pipeline); }
+
 inline const RayTracingPipelineImpl* ToBackend(const RayTracingPipeline* pipeline) { return static_cast<const RayTracingPipelineImpl*>(pipeline); }
 }  // namespace D3D12
 }  // namespace IssouRHI

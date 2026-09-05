@@ -37,5 +37,5 @@ private:
 
   // TODO: mutex
 };
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

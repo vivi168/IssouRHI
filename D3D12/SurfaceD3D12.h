@@ -6,7 +6,6 @@ namespace IssouRHI
 {
 namespace D3D12
 {
-// TODO
 class SurfaceImpl : public Surface
 {
 public:
@@ -14,16 +13,17 @@ public:
   ~SurfaceImpl() override;
 
   void Create() override;
+  void Configure(SurfaceConfiguration& config) override;
 
   std::shared_ptr<Texture> GetCurrentTexture() override;
   void Present() override;
 
-protected:
-  void CreateSwapChain(SurfaceConfiguration& config) override;
-  void CreateTextures(SurfaceConfiguration& config) override;
-
 private:
+  void CreateSwapChain(SurfaceConfiguration& config);
+  void CreateTextures(SurfaceConfiguration& config);
+
   Microsoft::WRL::ComPtr<IDXGISwapChain3> m_SwapChain;
+  std::vector<std::shared_ptr<Texture>> m_Textures;
 
   Microsoft::WRL::ComPtr<ID3D12Fence> m_Fence;
   HANDLE m_FenceEvent = nullptr;

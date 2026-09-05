@@ -31,10 +31,21 @@ void SurfaceImpl::Create()
   }
 }
 
-void SurfaceImpl::CreateSwapChain(SurfaceConfiguration& config)
+void SurfaceImpl::Configure(SurfaceConfiguration& config)
 {
+  // TODO: recreate swapchain etc
   if (m_Configured) return;
 
+  CreateSwapChain(config);
+  CreateTextures(config);
+  m_EnableVsync = config.enableVsync;
+
+  m_Configured = true;
+  m_Config = config;
+}
+
+void SurfaceImpl::CreateSwapChain(SurfaceConfiguration& config)
+{
   // this is to describe our display mode
   DXGI_MODE_DESC backBufferDesc = {};
   backBufferDesc.Width = config.width;
@@ -66,8 +77,6 @@ void SurfaceImpl::CreateSwapChain(SurfaceConfiguration& config)
 
 void SurfaceImpl::CreateTextures(SurfaceConfiguration& config)
 {
-  if (m_Configured) return;
-
   m_Textures.resize(config.bufferCount);
   m_FenceValues.resize(config.bufferCount);
 
@@ -113,5 +122,5 @@ void SurfaceImpl::Present()
   CHECK_HR(ToBackend(m_Device->GetQueue())->GetNativeQueue()->Signal(m_Fence.Get(), ++m_NextFenceValue));
   m_FenceValues[m_FrameIndex] = m_NextFenceValue;
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

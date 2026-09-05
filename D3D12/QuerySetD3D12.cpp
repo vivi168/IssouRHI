@@ -32,5 +32,5 @@ void QuerySetImpl::Create()
 
   m_QueryHeap->SetName(StringToWstring(m_Desc.label).c_str());
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

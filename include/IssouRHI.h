@@ -7,11 +7,13 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #ifdef _DEBUG
@@ -611,10 +613,21 @@ enum class ShaderStage {
   Callable,
 };
 
+class ShaderLibrary
+{
+public:
+  ShaderLibrary(Device* device);
+  virtual ~ShaderLibrary();
+
+  virtual void Create(std::span<std::byte> code) = 0;
+
+protected:
+  Device* m_Device;
+};
+
 struct ShaderModule {
+  ShaderLibrary* library;
   ShaderStage stage;
-  const void* code;
-  size_t size;
   std::optional<std::string> entryPointName = std::nullopt;
 };
 
@@ -632,7 +645,7 @@ public:
   virtual void Create(const ComputePipelineDesc& desc) = 0;
 
 protected:
-    Device* m_Device;
+  Device* m_Device;
 };
 
 enum ColorWriteFlags : uint8_t {
@@ -857,7 +870,7 @@ public:
 
   virtual void Create(const ShaderTableDesc& desc) = 0;
 
-  protected:
+protected:
   Device* m_Device;
 
   std::shared_ptr<Buffer> m_Buffer;
@@ -879,9 +892,9 @@ struct SurfaceConfiguration;
 class Surface;
 
 enum class Backend {
-    D3D12,
-    Metal,
-    Vulkan,
+  D3D12,
+  Metal,
+  Vulkan,
 };
 
 class Device
@@ -903,6 +916,7 @@ public:
   virtual std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc) = 0;
   virtual std::shared_ptr<AccelerationStructure> CreateAccelerationStructure(const AccelerationStructureDesc& desc) = 0;
 
+  virtual std::shared_ptr<ShaderLibrary> CreateShaderLibrary(std::span<std::byte> data) = 0;
   virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const ComputePipelineDesc& desc) = 0;
   virtual std::shared_ptr<RenderPipeline> CreateRenderPipeline(const RenderPipelineDesc& desc) = 0;
   virtual std::shared_ptr<RenderPipeline> CreateMeshPipeline(const RenderPipelineDesc& desc) = 0;
@@ -931,24 +945,21 @@ public:
   virtual ~Surface();
 
   virtual void Create() = 0;
+  virtual void Configure(SurfaceConfiguration& config) = 0;
 
-  void Configure(SurfaceConfiguration& config);
   virtual std::shared_ptr<Texture> GetCurrentTexture() = 0;
   virtual void Present() = 0;
 
   uint32_t CurrentFrameIndex() const { return m_FrameIndex; }
 
 protected:
-  virtual void CreateSwapChain(SurfaceConfiguration& config) = 0;
-  virtual void CreateTextures(SurfaceConfiguration& config) = 0;
-
   Device* m_Device;
   void* m_Handle;
 
-  std::vector<std::shared_ptr<Texture>> m_Textures;
-
   uint32_t m_FrameIndex;
   bool m_EnableVsync = false;
+
+  SurfaceConfiguration m_Config;
   bool m_Configured = false;
 };
 
@@ -1039,6 +1050,27 @@ struct BarriersDesc {
   std::span<TextureBarrierDesc> textures{};
 };
 
+struct ByteSpan {
+  ByteSpan() = default;
+
+  ByteSpan(std::span<const std::byte> bytes) : m_Bytes(bytes) {}
+
+  template <typename T>
+    requires std::is_trivially_copyable_v<T>
+  ByteSpan(const T& value) : m_Bytes(std::as_bytes(std::span{&value, 1}))
+  {
+  }
+
+  const std::byte* data() const { return m_Bytes.data(); }
+
+  std::size_t size() const { return m_Bytes.size(); }
+
+  bool empty() const { return m_Bytes.empty(); }
+
+private:
+  std::span<const std::byte> m_Bytes;
+};
+
 class CommandEncoder
 {
 public:
@@ -1081,10 +1113,9 @@ public:
   ComputePassEncoder(const ComputePassDesc& desc, CommandBuffer* commandBuffer);
   virtual ~ComputePassEncoder();
 
-  virtual void Dispatch(uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
+  virtual void Dispatch(ByteSpan args, uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
   // TODO: virtual DispatchIndirect(indirectBuffer, indirectOffset)
   virtual void End() = 0;
-  virtual void PushConstants(uint32_t offset, uint32_t size, const void* data) = 0;
   virtual void SetPipeline(ComputePipeline* pipeline) = 0;
 
 protected:
@@ -1103,7 +1134,10 @@ enum class LoadOp {
   DontCare,
 };
 
-// enum class StoreOp { Store, Discard };
+enum class StoreOp {
+  Store,
+  Discard,
+};
 
 struct ColorAttachment {
   TextureView* view;
@@ -1111,7 +1145,7 @@ struct ColorAttachment {
   TextureView* resolveTarget = nullptr;
   Color clearValue;
   LoadOp loadOp = LoadOp::Clear;
-  // StoreOp storeOp;
+  StoreOp storeOp = StoreOp::Store;
 };
 
 struct DepthStencilAttachment {
@@ -1128,7 +1162,7 @@ struct DepthStencilAttachment {
 
 struct RenderPassDesc {
   std::string label;
-  std::span<ColorAttachment> colorAttachment;
+  std::span<ColorAttachment> colorAttachments;
   DepthStencilAttachment depthStencilAttachment{};
   std::optional<TimestampWrites> timestampWrites = std::nullopt;
 };
@@ -1139,14 +1173,13 @@ public:
   RenderPassEncoder(const RenderPassDesc& desc, CommandBuffer* commandBuffer);
   virtual ~RenderPassEncoder();
 
-  virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
+  virtual void Draw(ByteSpan args, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
   // TODO: DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
   // TODO: DrawIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawIndexedIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawMesh();
-  virtual void DrawMeshIndirect(Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
+  virtual void DrawMeshIndirect(ByteSpan args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
   virtual void End() = 0;
-  virtual void PushConstants(uint32_t offset, uint32_t size, const void* data) = 0;
   virtual void SetPipeline(RenderPipeline* pipeline) = 0;
 
 protected:
@@ -1168,9 +1201,8 @@ public:
   virtual ~RayTracingPassEncoder();
 
   virtual void End() = 0;
-  virtual void PushConstants(uint32_t offset, uint32_t size, const void* data) = 0;
   virtual void SetPipeline(RayTracingPipeline* pipeline) = 0;
-  virtual void TraceRays(ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) = 0;
+  virtual void TraceRays(ByteSpan args, ShaderTable* shaderTable, uint32_t width, uint32_t height, uint32_t depth = 1) = 0;
   // TODO: TraceRaysIndirect
 
 protected:

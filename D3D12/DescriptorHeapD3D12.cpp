@@ -59,5 +59,5 @@ void DescriptorHeap::Free(DescriptorAllocation alloc)
   assert(cpuIdx == gpuIdx);
   m_FreeIndices.push_front(cpuIdx);
 }
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI

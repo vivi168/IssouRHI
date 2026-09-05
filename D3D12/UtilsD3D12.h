@@ -2,8 +2,8 @@
 
 #include "CommonD3D12.h"
 
-#include <string_view>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace IssouRHI
@@ -39,7 +39,7 @@ inline DXGI_FORMAT DXGIFormat(TextureFormat format)
     case TextureFormat::RGBA32Float:
       return DXGI_FORMAT_R32G32B32A32_FLOAT;
     default:
-      std::unreachable(); // FIXME
+      std::unreachable();  // TODO: add missing formats
   }
 }
 
@@ -70,5 +70,5 @@ inline DXGI_FORMAT DXGIFormat(IndexFormat format)
 }
 
 std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> D3D12RaytracingGeometryDescs(std::span<BottomLevelGeometryDesc> geometries);
-}
-}
+}  // namespace D3D12
+}  // namespace IssouRHI
