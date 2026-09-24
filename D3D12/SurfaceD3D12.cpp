@@ -33,11 +33,24 @@ void SurfaceImpl::Create()
 
 void SurfaceImpl::Configure(SurfaceConfiguration& config)
 {
-  // TODO: recreate swapchain etc
-  if (m_Configured) return;
+  if (config.width == 0 || config.height == 0) return;
 
-  CreateSwapChain(config);
-  CreateTextures(config);
+  bool buffersChanged = !m_Configured ||
+                        config.width != m_Config.width || config.height != m_Config.height ||
+                        config.format != m_Config.format || config.bufferCount != m_Config.bufferCount;
+
+  if (buffersChanged) {
+    if (m_Configured) {
+      m_Textures.clear();
+      CHECK_HR(m_SwapChain->ResizeBuffers(config.bufferCount, config.width, config.height, DXGIFormat(config.format), 0));
+    } else {
+      CreateSwapChain(config);
+    }
+
+    CreateTextures(config);
+    m_FrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
+  }
+
   m_EnableVsync = config.enableVsync;
 
   m_Configured = true;

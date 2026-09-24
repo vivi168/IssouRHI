@@ -945,6 +945,8 @@ public:
   virtual ~Surface();
 
   virtual void Create() = 0;
+  // On resize, before calling Configure, must flush GPU work (via queue WaitForAll)
+  // and release backbuffer texture/view refs (acquired via GetCurrentTexture/CreateView)
   virtual void Configure(SurfaceConfiguration& config) = 0;
 
   virtual std::shared_ptr<Texture> GetCurrentTexture() = 0;
