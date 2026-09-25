@@ -936,6 +936,11 @@ struct SurfaceConfiguration {
   uint32_t height;
   uint32_t bufferCount;
   bool enableVsync = false;
+
+  bool operator==(const SurfaceConfiguration& other) const
+  {
+    return width == other.width && height == other.height && format == other.format && bufferCount == other.bufferCount;
+  }
 };
 
 class Surface
@@ -962,7 +967,7 @@ protected:
   bool m_EnableVsync = false;
 
   SurfaceConfiguration m_Config;
-  bool m_Configured = false;
+  bool m_Created = false;
 };
 
 class CommandEncoder;

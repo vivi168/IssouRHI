@@ -35,16 +35,13 @@ void SurfaceImpl::Configure(SurfaceConfiguration& config)
 {
   if (config.width == 0 || config.height == 0) return;
 
-  bool buffersChanged = !m_Configured ||
-                        config.width != m_Config.width || config.height != m_Config.height ||
-                        config.format != m_Config.format || config.bufferCount != m_Config.bufferCount;
-
-  if (buffersChanged) {
-    if (m_Configured) {
+  if (!m_Created || config != m_Config) {
+    if (m_Created) {
       m_Textures.clear();
       CHECK_HR(m_SwapChain->ResizeBuffers(config.bufferCount, config.width, config.height, DXGIFormat(config.format), 0));
     } else {
       CreateSwapChain(config);
+      m_Created = true;
     }
 
     CreateTextures(config);
@@ -52,8 +49,6 @@ void SurfaceImpl::Configure(SurfaceConfiguration& config)
   }
 
   m_EnableVsync = config.enableVsync;
-
-  m_Configured = true;
   m_Config = config;
 }
 
