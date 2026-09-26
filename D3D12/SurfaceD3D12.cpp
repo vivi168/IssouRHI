@@ -101,6 +101,7 @@ void SurfaceImpl::CreateTextures(SurfaceConfiguration& config)
     CHECK_HR(m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&res)));
 
     auto tex = std::make_shared<TextureImpl>(m_Device, desc);
+    tex->SetPlaneCount();
     tex->Attach(res);
 
     m_Textures[i] = tex;

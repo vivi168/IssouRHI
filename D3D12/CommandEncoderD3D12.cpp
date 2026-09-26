@@ -332,7 +332,24 @@ static std::optional<D3D12_BUFFER_BARRIER> Transition(Buffer* buf, StageAccess f
   return barrier;
 }
 
-static std::optional<D3D12_TEXTURE_BARRIER> Transition(Texture* tex, StageAccessLayout from, StageAccessLayout to)
+static D3D12_BARRIER_SUBRESOURCE_RANGE D3D12BarrierSubresourceRange(Texture* tex, const std::optional<SubresourceRange>& range)
+{
+  if (!range) {
+    return CD3DX12_BARRIER_SUBRESOURCE_RANGE(0xffffffff);
+  }
+
+  assert(range->mipLevelCount > 0 && range->arrayLayerCount > 0);
+  return {
+      .IndexOrFirstMipLevel = range->baseMipLevel,
+      .NumMipLevels = range->mipLevelCount,
+      .FirstArraySlice = range->baseArrayLayer,
+      .NumArraySlices = range->arrayLayerCount,
+      .FirstPlane = 0,
+      .NumPlanes = ToBackend(tex)->PlaneCount(),
+  };
+}
+
+static std::optional<D3D12_TEXTURE_BARRIER> Transition(Texture* tex, StageAccessLayout from, StageAccessLayout to, const std::optional<SubresourceRange>& range)
 {
   auto fromAccess = D3D12BarrierAccess(from.access);
   auto toAccess = D3D12BarrierAccess(to.access);
@@ -352,7 +369,7 @@ static std::optional<D3D12_TEXTURE_BARRIER> Transition(Texture* tex, StageAccess
                                          fromLayout,
                                          toLayout,
                                          ToBackend(tex)->Resource(),
-                                         CD3DX12_BARRIER_SUBRESOURCE_RANGE(0xffffffff),  // TODO
+                                         D3D12BarrierSubresourceRange(tex, range),
                                          D3D12_TEXTURE_BARRIER_FLAG_NONE);
 
   return barrier;
@@ -384,7 +401,7 @@ void CommandEncoderImpl::Barrier(const BarriersDesc& desc)
 
   UINT nt = 0;
   for (const auto& t : desc.textures) {
-    auto barrier = Transition(t.resource, t.from, t.to);
+    auto barrier = Transition(t.resource, t.from, t.to, t.range);
     if (barrier) {
       textureBarriers[nt++] = barrier.value();
     }

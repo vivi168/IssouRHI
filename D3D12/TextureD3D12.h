@@ -20,6 +20,7 @@ public:
   std::shared_ptr<TextureView> CreateView(const TextureViewDesc& desc) override;
 
 public:
+  void SetPlaneCount();
   void Attach(ID3D12Resource* other, D3D12MA::Allocation* allocation = nullptr);
 
   D3D12_SHADER_RESOURCE_VIEW_DESC SrvDescriptor(const TextureViewDesc& desc) const;
@@ -30,9 +31,12 @@ public:
 
   ID3D12Resource* Resource() const { return m_Resource.Get(); };
 
+  uint32_t PlaneCount() const { return m_PlaneCount; }
+
 private:
   Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource;
   D3D12MA::Allocation* m_Allocation = nullptr;
+  uint32_t m_PlaneCount = 0;
 };
 
 inline TextureImpl* ToBackend(Texture* tex) { return static_cast<TextureImpl*>(tex); }

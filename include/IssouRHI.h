@@ -1048,7 +1048,7 @@ struct TextureBarrierDesc {
   Texture* resource;
   StageAccessLayout from;
   StageAccessLayout to;
-  // TODO: SubresourceRange range;
+  std::optional<SubresourceRange> range = std::nullopt;
 };
 
 struct BarriersDesc {

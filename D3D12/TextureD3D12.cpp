@@ -96,11 +96,12 @@ void TextureImpl::Create()
     initialLayout = D3D12_BARRIER_LAYOUT_DEPTH_STENCIL_WRITE;
   }
 
+  SetPlaneCount();
+
   ID3D12Resource* resource;
   D3D12MA::Allocation* allocation;
   CHECK_HR(ToBackend(m_Device)->GetAllocator()->CreateResource3(&allocDesc, &textureDesc, initialLayout, pOptimizedClearValue, 0, nullptr, &allocation, IID_PPV_ARGS(&resource)));
-  m_Resource.Attach(resource);
-  m_Allocation = allocation;
+  Attach(resource, allocation);
 
   m_Resource->SetName(StringToWstring(m_Desc.label).c_str());
 }
@@ -168,6 +169,11 @@ std::shared_ptr<TextureView> TextureImpl::CreateView(const TextureViewDesc& desc
   m_Views[desc] = view;
 
   return view;
+}
+
+void TextureImpl::SetPlaneCount()
+{
+  m_PlaneCount = D3D12GetFormatPlaneCount(ToBackend(m_Device)->GetNativeDevice(), DXGIFormat(Format()));
 }
 
 void TextureImpl::Attach(ID3D12Resource* other, D3D12MA::Allocation* allocation)
