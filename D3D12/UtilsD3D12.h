@@ -32,10 +32,18 @@ inline DXGI_FORMAT DXGIFormat(TextureFormat format)
       return DXGI_FORMAT_R8G8_UNORM;
     case TextureFormat::R32Uint:
       return DXGI_FORMAT_R32_UINT;
+    case TextureFormat::R32Float:
+      return DXGI_FORMAT_R32_FLOAT;
     case TextureFormat::RGBA8Unorm:
       return DXGI_FORMAT_R8G8B8A8_UNORM;
+    case TextureFormat::RGBA8Uint:
+      return DXGI_FORMAT_R8G8B8A8_UINT;
     case TextureFormat::RGB10A2Unorm:
       return DXGI_FORMAT_R10G10B10A2_UNORM;
+    case TextureFormat::RG32Float:
+      return DXGI_FORMAT_R32G32_FLOAT;
+    case TextureFormat::RGBA16Float:
+      return DXGI_FORMAT_R16G16B16A16_FLOAT;
     case TextureFormat::RGBA32Float:
       return DXGI_FORMAT_R32G32B32A32_FLOAT;
     default:
