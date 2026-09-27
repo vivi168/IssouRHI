@@ -239,6 +239,7 @@ enum class TextureFormat : uint32_t {
   BC7Unorm,
   Depth32Float,
   R8Unorm,
+  R16Unorm,
   RG8Unorm,
   R32Uint,
   R32Float,
