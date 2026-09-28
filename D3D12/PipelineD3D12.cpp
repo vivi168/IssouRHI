@@ -45,30 +45,6 @@ static D3D12_CULL_MODE D3D12CullMode(CullMode mode)
   }
 }
 
-static D3D12_COMPARISON_FUNC D3D12ComparisonFunc(CompareFunction function)
-{
-  switch (function) {
-    case CompareFunction::Never:
-      return D3D12_COMPARISON_FUNC_NEVER;
-    case CompareFunction::Less:
-      return D3D12_COMPARISON_FUNC_LESS;
-    case CompareFunction::Equal:
-      return D3D12_COMPARISON_FUNC_EQUAL;
-    case CompareFunction::LessEqual:
-      return D3D12_COMPARISON_FUNC_LESS_EQUAL;
-    case CompareFunction::Greater:
-      return D3D12_COMPARISON_FUNC_GREATER;
-    case CompareFunction::NotEqual:
-      return D3D12_COMPARISON_FUNC_NOT_EQUAL;
-    case CompareFunction::GreaterEqual:
-      return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
-    case CompareFunction::Always:
-      return D3D12_COMPARISON_FUNC_ALWAYS;
-    default:
-      std::unreachable();
-  }
-}
-
 static D3D12_STENCIL_OP D3D12DepthStencilOp(StencilOperation op)
 {
   switch (op) {

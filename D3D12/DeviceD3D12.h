@@ -20,6 +20,7 @@ public:
   std::shared_ptr<Surface> CreateSurface(void* handle) override;
   std::shared_ptr<QuerySet> CreateQuerySet(const QuerySetDesc& desc) override;
   std::shared_ptr<Texture> CreateTexture(const TextureDesc& desc) override;
+  std::shared_ptr<Sampler> CreateSampler(const SamplerDesc& desc) override;
   std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc) override;
   std::shared_ptr<AccelerationStructure> CreateAccelerationStructure(const AccelerationStructureDesc& desc) override;
 
@@ -43,6 +44,8 @@ public:
 
   ID3D12DescriptorHeap* DsvDescriptorHeap() const { return m_DsvDescriptorHeap.Get(); }
 
+  ID3D12DescriptorHeap* SamplerDescriptorHeap() const { return m_SamplerDescriptorHeap.Get(); }
+
   ID3D12RootSignature* RootSignature() const { return m_RootSignature.Get(); }
 
   ID3D12CommandSignature* DispatchSignature() const { return m_DispatchSignature.Get(); }
@@ -56,10 +59,12 @@ public:
   DescriptorAllocation AllocCbvSrvUavDescriptor();
   DescriptorAllocation AllocRtvDescriptor();
   DescriptorAllocation AllocDsvDescriptor();
+  DescriptorAllocation AllocSamplerDescriptor();
 
   void FreeSrvUavDescriptor(DescriptorAllocation alloc);
   void FreeRtvDescriptor(DescriptorAllocation alloc);
   void FreeDsvDescriptor(DescriptorAllocation alloc);
+  void FreeSamplerDescriptor(DescriptorAllocation alloc);
 
 private:
   Microsoft::WRL::ComPtr<IDXGIAdapter1> m_Adapter;
@@ -78,6 +83,7 @@ private:
   DescriptorHeap m_CbvSrvUavDescriptorHeap;
   DescriptorHeap m_RtvDescriptorHeap;
   DescriptorHeap m_DsvDescriptorHeap;
+  DescriptorHeap m_SamplerDescriptorHeap;
 };
 
 inline DeviceImpl* ToBackend(Device* device) { return static_cast<DeviceImpl*>(device); }

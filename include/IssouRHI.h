@@ -3,6 +3,7 @@
 // TODO: get rid of STL in public header?
 // would need: string (=> const char* ?) span(=> ptr + size?), optional(=> nullptr ?), variant(=> enum+union ?), shared_ptr(=> ComPtr like class?)
 #include <list>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <span>
@@ -718,6 +719,50 @@ enum class CompareFunction {
   Always,
 };
 
+enum class FilterMode {
+  Nearest,
+  Linear,
+};
+
+enum class AddressMode {
+  ClampToEdge,
+  Repeat,
+  MirrorRepeat,
+};
+
+struct SamplerDesc {
+  std::string label;
+
+  AddressMode addressModeU = AddressMode::ClampToEdge;
+  AddressMode addressModeV = AddressMode::ClampToEdge;
+  AddressMode addressModeW = AddressMode::ClampToEdge;
+
+  FilterMode minFilter = FilterMode::Nearest;
+  FilterMode magFilter = FilterMode::Nearest;
+  FilterMode mipmapFilter = FilterMode::Nearest;
+
+  float lodMinClamp = 0.0f;
+  float lodMaxClamp = std::numeric_limits<float>::max();
+
+  uint32_t maxAnisotropy = 1;
+
+  std::optional<CompareFunction> compare = std::nullopt; // default = Always
+};
+
+class Sampler
+{
+public:
+  Sampler(Device* device, const SamplerDesc& desc);
+  virtual ~Sampler();
+
+  virtual void Create() = 0;
+  virtual uint32_t DescriptorIndex() const = 0;
+
+protected:
+  Device* m_Device;
+  SamplerDesc m_Desc;
+};
+
 enum class StencilOperation {
   Keep,
   Zero,
@@ -917,6 +962,7 @@ public:
 
   virtual std::shared_ptr<Surface> CreateSurface(void* handle) = 0;
   virtual std::shared_ptr<QuerySet> CreateQuerySet(const QuerySetDesc& desc) = 0;
+  virtual std::shared_ptr<Sampler> CreateSampler(const SamplerDesc& desc) = 0;
   virtual std::shared_ptr<Texture> CreateTexture(const TextureDesc& desc) = 0;
   virtual std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc) = 0;
   virtual std::shared_ptr<AccelerationStructure> CreateAccelerationStructure(const AccelerationStructureDesc& desc) = 0;

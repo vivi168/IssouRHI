@@ -5,6 +5,7 @@
 #include "PipelineD3D12.h"
 #include "QuerySetD3D12.h"
 #include "QueueD3D12.h"
+#include "SamplerD3D12.h"
 #include "ShaderLibraryD3D12.h"
 #include "ShaderTableD3D12.h"
 #include "SurfaceD3D12.h"
@@ -214,6 +215,7 @@ void DeviceImpl::Create(const GPUSelection& gpuSelection)
     m_CbvSrvUavDescriptorHeap.Create(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, NUM_DESCRIPTORS_PER_HEAP, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
     m_RtvDescriptorHeap.Create(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, NUM_DESCRIPTORS_PER_HEAP, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
     m_DsvDescriptorHeap.Create(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, NUM_DESCRIPTORS_PER_HEAP, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+    m_SamplerDescriptorHeap.Create(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
   }
 
   // Create root signature
@@ -227,17 +229,9 @@ void DeviceImpl::Create(const GPUSelection& gpuSelection)
     // DX12 only CHEAT: inject indirect command buffer payload in the second root parameter. accessible via cbuffer (b1)
     rootParameters[1].InitAsConstants(IndirectArgumentConstantCount, 1);
 
-    // Static sampler
-    // TODO: this has nothing to do here.
-    // FIXME: get read of static sampler and pass them from app side via sampler descriptor heap
-    constexpr UINT StaticSamplerCount = 2;
-    CD3DX12_STATIC_SAMPLER_DESC staticSamplers[StaticSamplerCount];
-    staticSamplers[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_POINT);
-    staticSamplers[1].Init(1, D3D12_FILTER_ANISOTROPIC);
-
     // Root Signature
-    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc(RootParameterCount, rootParameters, StaticSamplerCount, staticSamplers, flags);
+    D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED | D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc(RootParameterCount, rootParameters, 0, nullptr, flags);
 
     ID3DBlob* signatureBlobPtr;
     CHECK_HR(D3D12SerializeVersionedRootSignature(&rootSignatureDesc, &signatureBlobPtr, nullptr));
@@ -433,6 +427,13 @@ std::shared_ptr<QuerySet> DeviceImpl::CreateQuerySet(const QuerySetDesc& desc)
   return qs;
 }
 
+std::shared_ptr<Sampler> DeviceImpl::CreateSampler(const SamplerDesc& desc)
+{
+  auto sampler = std::make_shared<SamplerImpl>(this, desc);
+  sampler->Create();
+  return sampler;
+}
+
 std::shared_ptr<Texture> DeviceImpl::CreateTexture(const TextureDesc& desc)
 {
   auto tex = std::make_shared<TextureImpl>(this, desc);
@@ -520,6 +521,11 @@ DescriptorAllocation DeviceImpl::AllocDsvDescriptor()
   return m_DsvDescriptorHeap.Alloc();
 }
 
+DescriptorAllocation DeviceImpl::AllocSamplerDescriptor()
+{
+  return m_SamplerDescriptorHeap.Alloc();
+}
+
 void DeviceImpl::FreeSrvUavDescriptor(DescriptorAllocation alloc)
 {
   m_CbvSrvUavDescriptorHeap.Free(alloc);
@@ -533,6 +539,11 @@ void DeviceImpl::FreeRtvDescriptor(DescriptorAllocation alloc)
 void DeviceImpl::FreeDsvDescriptor(DescriptorAllocation alloc)
 {
   m_DsvDescriptorHeap.Free(alloc);
+}
+
+void DeviceImpl::FreeSamplerDescriptor(DescriptorAllocation alloc)
+{
+  m_SamplerDescriptorHeap.Free(alloc);
 }
 }  // namespace D3D12
 }  // namespace IssouRHI

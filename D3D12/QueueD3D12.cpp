@@ -28,8 +28,7 @@ void CommandBufferImpl::Create()
 
 void CommandBufferImpl::Init()
 {
-  // TODO: also set sampler heap
-  std::array descriptorHeaps{ToBackend(m_Device)->CbvSrvUavDescriptorHeap()};
+  std::array descriptorHeaps{ToBackend(m_Device)->CbvSrvUavDescriptorHeap(), ToBackend(m_Device)->SamplerDescriptorHeap()};
   m_CommandList->SetDescriptorHeaps(static_cast<UINT>(descriptorHeaps.size()), descriptorHeaps.data());
 }
 

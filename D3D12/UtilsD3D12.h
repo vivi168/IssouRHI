@@ -80,5 +80,29 @@ inline DXGI_FORMAT DXGIFormat(IndexFormat format)
 }
 
 std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> D3D12RaytracingGeometryDescs(std::span<BottomLevelGeometryDesc> geometries);
+
+inline D3D12_COMPARISON_FUNC D3D12ComparisonFunc(CompareFunction function)
+{
+  switch (function) {
+    case CompareFunction::Never:
+      return D3D12_COMPARISON_FUNC_NEVER;
+    case CompareFunction::Less:
+      return D3D12_COMPARISON_FUNC_LESS;
+    case CompareFunction::Equal:
+      return D3D12_COMPARISON_FUNC_EQUAL;
+    case CompareFunction::LessEqual:
+      return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+    case CompareFunction::Greater:
+      return D3D12_COMPARISON_FUNC_GREATER;
+    case CompareFunction::NotEqual:
+      return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+    case CompareFunction::GreaterEqual:
+      return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+    case CompareFunction::Always:
+      return D3D12_COMPARISON_FUNC_ALWAYS;
+    default:
+      std::unreachable();
+  }
+}
 }  // namespace D3D12
 }  // namespace IssouRHI
