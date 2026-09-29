@@ -31,6 +31,18 @@ RenderPipelineImpl::RenderPipelineImpl(Device* device, Type type) : RenderPipeli
 
 RenderPipelineImpl::~RenderPipelineImpl() = default;
 
+static D3D12_FILL_MODE D3D12FillMode(PolygonMode mode)
+{
+  switch (mode) {
+    case PolygonMode::Fill:
+      return D3D12_FILL_MODE_SOLID;
+    case PolygonMode::Line:
+      return D3D12_FILL_MODE_WIREFRAME;
+    default:
+      std::unreachable();
+  }
+}
+
 static D3D12_CULL_MODE D3D12CullMode(CullMode mode)
 {
   switch (mode) {
@@ -223,7 +235,7 @@ void RenderPipelineImpl::Create(const RenderPipelineDesc& desc)
     psoDesc.SampleMask = desc.multiSample.mask;
 
     // RasterizerState
-    psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+    psoDesc.RasterizerState.FillMode = D3D12FillMode(desc.primitive.polygonMode);
     psoDesc.RasterizerState.CullMode = D3D12CullMode(desc.primitive.cullMode);
     psoDesc.RasterizerState.FrontCounterClockwise = desc.primitive.frontFace == FrontFace::CCW;
     psoDesc.RasterizerState.DepthBias = desc.depthStencil.depthBias;

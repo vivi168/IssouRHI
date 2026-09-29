@@ -823,11 +823,17 @@ enum class CullMode {
   Back,
 };
 
+enum class PolygonMode {
+  Fill,
+  Line,
+};
+
 struct PrimitiveState {
   PrimitiveTopology topology = PrimitiveTopology::TriangleList;
   IndexFormat stripIndexFormat = IndexFormat::Undefined;
   FrontFace frontFace = FrontFace::CCW;
   CullMode cullMode = CullMode::None;
+  PolygonMode polygonMode = PolygonMode::Fill;
   bool unclippedDepth = false;
 };
 

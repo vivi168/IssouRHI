@@ -42,16 +42,12 @@ SamplerImpl::~SamplerImpl()
 
 void SamplerImpl::Create()
 {
-  const auto reduction = m_Desc.compare ? D3D12_FILTER_REDUCTION_TYPE_COMPARISON : D3D12_FILTER_REDUCTION_TYPE_STANDARD;
-  const auto minFilter = D3D12FilterType(m_Desc.minFilter);
-  const auto magFilter = D3D12FilterType(m_Desc.magFilter);
-  const auto mipFilter = D3D12FilterType(m_Desc.mipmapFilter);
-
   D3D12_SAMPLER_DESC desc{};
+  const auto reduction = m_Desc.compare ? D3D12_FILTER_REDUCTION_TYPE_COMPARISON : D3D12_FILTER_REDUCTION_TYPE_STANDARD;
   if (m_Desc.maxAnisotropy > 1) {
     desc.Filter = D3D12_ENCODE_ANISOTROPIC_FILTER(reduction);
   } else {
-    desc.Filter = D3D12_ENCODE_BASIC_FILTER(minFilter, magFilter, mipFilter, reduction);
+    desc.Filter = D3D12_ENCODE_BASIC_FILTER(D3D12FilterType(m_Desc.minFilter), D3D12FilterType(m_Desc.magFilter), D3D12FilterType(m_Desc.mipmapFilter), reduction);
   }
   desc.AddressU = D3D12AddressMode(m_Desc.addressModeU);
   desc.AddressV = D3D12AddressMode(m_Desc.addressModeV);
