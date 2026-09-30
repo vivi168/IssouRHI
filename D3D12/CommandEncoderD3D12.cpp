@@ -545,6 +545,17 @@ void RenderPassEncoderImpl::Draw(ByteSpan args, uint32_t vertexCount, uint32_t i
   CommandList()->DrawInstanced(vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
+void RenderPassEncoderImpl::DrawMesh(ByteSpan args, uint32_t x, uint32_t y, uint32_t z)
+{
+  if (!args.empty()) {
+    assert(args.size() % sizeof(uint32_t) == 0);
+    assert(args.size() <= RootConstantCount * sizeof(uint32_t));
+    CommandList()->SetGraphicsRoot32BitConstants(0, static_cast<UINT>(args.size() / sizeof(uint32_t)), args.data(), 0);
+  }
+
+  CommandList()->DispatchMesh(x, y, z);
+}
+
 void RenderPassEncoderImpl::DrawMeshIndirect(ByteSpan args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer, uint64_t countOffset)
 {
   if (!args.empty()) {

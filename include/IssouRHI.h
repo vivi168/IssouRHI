@@ -1241,7 +1241,7 @@ public:
   // TODO: DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
   // TODO: DrawIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawIndexedIndirect(indirectBuffer, indirectOffset)
-  // TODO: DrawMesh();
+  virtual void DrawMesh(ByteSpan args, uint32_t x, uint32_t y = 1, uint32_t z = 1) = 0;
   virtual void DrawMeshIndirect(ByteSpan args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) = 0;
   virtual void End() = 0;
   virtual void SetPipeline(RenderPipeline* pipeline) = 0;

@@ -60,7 +60,7 @@ public:
   // TODO: DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
   // TODO: DrawIndirect(indirectBuffer, indirectOffset)
   // TODO: DrawIndexedIndirect(indirectBuffer, indirectOffset)
-  // TODO: DrawMesh();
+  void DrawMesh(ByteSpan args, uint32_t x, uint32_t y = 1, uint32_t z = 1) override;
   void DrawMeshIndirect(ByteSpan args, Buffer* indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer* countBuffer = nullptr, uint64_t countOffset = 0) override;
   void End() override;
   void SetPipeline(RenderPipeline* pipeline) override;
