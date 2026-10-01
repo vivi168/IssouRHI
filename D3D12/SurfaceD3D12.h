@@ -18,6 +18,9 @@ public:
   std::shared_ptr<Texture> GetCurrentTexture() override;
   void Present() override;
 
+public:
+  DXGI_FORMAT GetSwapChainFormat() const;
+
 private:
   void CreateSwapChain(SurfaceConfiguration& config);
   void CreateTextures(SurfaceConfiguration& config);

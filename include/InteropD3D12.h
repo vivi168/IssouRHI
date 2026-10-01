@@ -24,6 +24,8 @@ void FreeCbvSrvUavDescriptor(Device* device, D3D12_CPU_DESCRIPTOR_HANDLE cpuHand
 D3D12_CPU_DESCRIPTOR_HANDLE RtvDescriptorHandle(TextureView* view);
 D3D12_CPU_DESCRIPTOR_HANDLE DsvDescriptorHandle(TextureView* view);
 
+DXGI_FORMAT GetSwapChainFormat(Surface* surface);
+
 void PrintAdapterList();
 void ReportLiveObjects();
 }  // namespace D3D12

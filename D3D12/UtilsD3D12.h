@@ -40,6 +40,8 @@ inline DXGI_FORMAT DXGIFormat(TextureFormat format)
       return DXGI_FORMAT_R8G8B8A8_UNORM;
     case TextureFormat::RGBA8Uint:
       return DXGI_FORMAT_R8G8B8A8_UINT;
+    case TextureFormat::BGRA8Unorm:
+      return DXGI_FORMAT_B8G8R8A8_UNORM;
     case TextureFormat::RGB10A2Unorm:
       return DXGI_FORMAT_R10G10B10A2_UNORM;
     case TextureFormat::RG32Float:

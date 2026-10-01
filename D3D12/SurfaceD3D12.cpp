@@ -52,6 +52,18 @@ void SurfaceImpl::Configure(SurfaceConfiguration& config)
   m_Config = config;
 }
 
+DXGI_FORMAT SurfaceImpl::GetSwapChainFormat() const
+{
+  if (!m_Created) {
+    return DXGI_FORMAT_UNKNOWN;
+  }
+
+  DXGI_SWAP_CHAIN_DESC1 desc{};
+  CHECK_HR(m_SwapChain->GetDesc1(&desc));
+
+  return desc.Format;
+}
+
 void SurfaceImpl::CreateSwapChain(SurfaceConfiguration& config)
 {
   // this is to describe our display mode

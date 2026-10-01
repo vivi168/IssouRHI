@@ -3,6 +3,7 @@
 #include "CommandEncoderD3D12.h"
 #include "DeviceD3D12.h"
 #include "QueueD3D12.h"
+#include "SurfaceD3D12.h"
 #include "TextureD3D12.h"
 
 namespace IssouRHI
@@ -67,6 +68,11 @@ D3D12_CPU_DESCRIPTOR_HANDLE RtvDescriptorHandle(TextureView* view)
 D3D12_CPU_DESCRIPTOR_HANDLE DsvDescriptorHandle(TextureView* view)
 {
   return ToBackend(view)->DsvDescriptorAlloc().cpuHandle;
+}
+
+DXGI_FORMAT GetSwapChainFormat(Surface* surface)
+{
+  return static_cast<SurfaceImpl*>(surface)->GetSwapChainFormat();
 }
 }  // namespace D3D12
 }  // namespace IssouRHI
