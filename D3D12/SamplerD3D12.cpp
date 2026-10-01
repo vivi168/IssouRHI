@@ -53,7 +53,7 @@ void SamplerImpl::Create()
   desc.AddressV = D3D12AddressMode(m_Desc.addressModeV);
   desc.AddressW = D3D12AddressMode(m_Desc.addressModeW);
   desc.MaxAnisotropy = m_Desc.maxAnisotropy;
-  desc.ComparisonFunc = D3D12ComparisonFunc(m_Desc.compare.value_or(CompareFunction::Always));
+  desc.ComparisonFunc = D3D12ComparisonFunc(m_Desc.compare);
   desc.MinLOD = m_Desc.lodMinClamp;
   desc.MaxLOD = m_Desc.lodMaxClamp;
 

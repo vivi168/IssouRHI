@@ -81,9 +81,13 @@ inline DXGI_FORMAT DXGIFormat(IndexFormat format)
 
 std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> D3D12RaytracingGeometryDescs(std::span<BottomLevelGeometryDesc> geometries);
 
-inline D3D12_COMPARISON_FUNC D3D12ComparisonFunc(CompareFunction function)
+inline D3D12_COMPARISON_FUNC D3D12ComparisonFunc(std::optional<CompareFunction> function)
 {
-  switch (function) {
+  if (!function) {
+    return D3D12_COMPARISON_FUNC_NONE;
+  }
+
+  switch (function.value()) {
     case CompareFunction::Never:
       return D3D12_COMPARISON_FUNC_NEVER;
     case CompareFunction::Less:

@@ -174,6 +174,15 @@ void DeviceImpl::Create(const GPUSelection& gpuSelection)
 #ifdef ENABLE_DEBUG_LAYER
   ComPtr<ID3D12InfoQueue> infoQueue;
   if (SUCCEEDED(m_Device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+    D3D12_MESSAGE_ID deniedMessages[] = {
+        D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
+        D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
+    };
+    D3D12_INFO_QUEUE_FILTER filter{};
+    filter.DenyList.NumIDs = static_cast<UINT>(std::size(deniedMessages));
+    filter.DenyList.pIDList = deniedMessages;
+    CHECK_HR(infoQueue->AddStorageFilterEntries(&filter));
+
     infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
     infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
     infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
