@@ -122,10 +122,9 @@ void SurfaceImpl::CreateTextures(SurfaceConfiguration& config)
   }
 }
 
-std::shared_ptr<Texture> SurfaceImpl::GetCurrentTexture()
+Texture* SurfaceImpl::GetCurrentTexture()
 {
   m_FrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
-  auto texture = m_Textures[m_FrameIndex];
 
   UINT64 fenceValue = m_FenceValues[m_FrameIndex];
   if (m_Fence->GetCompletedValue() < fenceValue) {
@@ -133,7 +132,7 @@ std::shared_ptr<Texture> SurfaceImpl::GetCurrentTexture()
     WaitForSingleObject(m_FenceEvent, INFINITE);
   }
 
-  return texture;
+  return m_Textures[m_FrameIndex].get();
 }
 
 void SurfaceImpl::Present()

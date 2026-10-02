@@ -15,7 +15,7 @@ public:
   void Create() override;
   void Configure(SurfaceConfiguration& config) override;
 
-  std::shared_ptr<Texture> GetCurrentTexture() override;
+  Texture* GetCurrentTexture() override;
   void Present() override;
 
 public:
